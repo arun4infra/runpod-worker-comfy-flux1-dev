@@ -87,11 +87,14 @@ RUN if [ "$MODEL_TYPE" = "sdxl" ]; then \
       wget -O models/clip/t5xxl_fp8_e4m3fn.safetensors https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors && \
       wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/vae/ae.safetensors https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/ae.safetensors; \
     elif [ "$MODEL_TYPE" = "flux1-dev-lora-gen" ]; then \
-      wget -c --timeout=720000 --tries=infinite --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/unet/flux1-dev.safetensors https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/flux1-dev.safetensors && \      
-      wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/aidmaFLUXPro1.1-FLUX-v0.3.safetensors https://huggingface.co/Arun-Subramanian/FLUX.1-dev-lora-2r8n/resolve/main/aidmaFLUXPro1.1-FLUX-v0.3.safetensors && \
-      wget -O models/clip/clip_l.safetensors https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors && \
-      wget -O models/clip/t5xxl_fp8_e4m3fn.safetensors https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors && \
-      wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/vae/ae.safetensors https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/ae.safetensors; \
+      wget -c --timeout=720000 --tries=infinite --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/unet/flux1-dev.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/flux1-dev.safetensors && \      
+      wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/aidmaFLUXPro1.1-FLUX-v0.3.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/aidmaFLUXPro1.1-FLUX-v0.3.safetensors && \
+      wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/Cynthia3DProduct.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/Cynthia3DProduct.safetensors && \
+      wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/Textimprover-FLUX-V0.4.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/Textimprover-FLUX-V0.4.safetensors && \
+      wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/aidmaInkStyle-FLUX-V0.1.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/aidmaInkStyle-FLUX-V0.1.safetensors && \
+      wget -O models/clip/clip_l.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/clip_l.safetensors && \
+      wget -O models/clip/t5xxl_fp8_e4m3fn.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/t5xxl_fp8_e4m3fn.safetensors && \
+      wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/vae/ae.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/ae.safetensors; \
     fi
 
 # Stage 3: Final image
