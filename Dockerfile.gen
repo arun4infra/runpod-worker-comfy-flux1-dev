@@ -67,7 +67,7 @@ WORKDIR /comfyui
 RUN mkdir -p models/checkpoints models/vae models/unet models/clip models/loras
 
 # Copy local model files into the container
-COPY assets/models/ /comfyui/models/
+# COPY assets/models/ /comfyui/models/
 
 # # Download checkpoints/vae/LoRA to include in image based on model type
 RUN if [ "$MODEL_TYPE" = "sdxl" ]; then \
