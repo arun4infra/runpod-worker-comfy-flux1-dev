@@ -7,6 +7,7 @@ cd runpod-worker-comfy-flux1-dev
 chmod +x ./build.sh  
 export HUGGINGFACE_ACCESS_TOKEN=hf_  
 ./build.sh Dockerfile.gen flux1-dev-gen-gguf  
+docker push arun4infra/runpod-worker-comfy:flux1-dev-gen-gguf  
 
 # Validate
 docker run --rm arun4infra/runpod-worker-comfy:flux1-dev-gen-gguf ls -la /comfyui/models/clip  
