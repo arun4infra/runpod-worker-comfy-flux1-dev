@@ -84,7 +84,7 @@ RUN wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/
 RUN if [ "$MODEL_TYPE" = "flux1-dev-lora-gen" ]; then \
       wget -c --timeout=720000 --tries=infinite --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/unet/flux1-dev.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/flux1-dev.safetensors && \
       wget -O models/clip/t5xxl_fp8_e4m3fn.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/t5xxl_fp8_e4m3fn.safetensors; \
-    elif [ "$MODEL_TYPE" = "flux1-dev-lora-gen-gguf" ]; then \
+    elif [ "$MODEL_TYPE" = "flux1-dev-gen-gguf" ]; then \
       wget -c --timeout=720000 --tries=infinite --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/unet/flux1-dev-Q6_K.gguf https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/flux1-dev-Q6_K.gguf && \
       wget -O models/clip/t5-v1_1-xxl-encoder-Q6_K.gguf https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/t5-v1_1-xxl-encoder-Q6_K.gguf; \
     fi
