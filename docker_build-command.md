@@ -26,7 +26,7 @@ docker push arun4infra/runpod-worker-comfy:flux1-dev-gen
 docker push arun4infra/runpod-worker-comfy:flux1-dev-gen-gguf
 
 # For Local Arun lora build:
-./build.sh Dockerfile.arunlora flux1-dev-lora-2r8n-d1g2
+./build.sh Dockerfile.arunlora flux1-dev-2r8n-d1g2
 
 docker push arun4infra/runpod-worker-comfy:flux1-dev-2r8n-d1g2
 
