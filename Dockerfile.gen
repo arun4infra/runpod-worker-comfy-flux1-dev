@@ -55,10 +55,16 @@ RUN chmod +x /start.sh /restore_snapshot.sh
 CMD ["/start.sh"]
 
 # Stage 2: Download models
-FROM base as model_setup
+FROM base as downloader
 
 ARG HUGGINGFACE_ACCESS_TOKEN
 ARG MODEL_TYPE
+
+# Validate MODEL_TYPE - only allow specific model types
+RUN if [ "$MODEL_TYPE" != "flux1-dev-lora-gen" ] && [ "$MODEL_TYPE" != "flux1-dev-lora-gen-gguf" ]; then \
+      echo "ERROR: Only MODEL_TYPE=flux1-dev-lora-gen or MODEL_TYPE=flux1-dev-lora-gen-gguf are supported"; \
+      exit 1; \
+    fi
 
 # Change working directory to ComfyUI
 WORKDIR /comfyui
@@ -66,42 +72,28 @@ WORKDIR /comfyui
 # Create necessary directories
 RUN mkdir -p models/checkpoints models/vae models/unet models/clip models/loras
 
-# Copy local model files into the container
-# COPY assets/models/ /comfyui/models/
+# Download common models for both model types
+RUN wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/aidmaFLUXPro1.1-FLUX-v0.3.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/aidmaFLUXPro1.1-FLUX-v0.3.safetensors && \
+    wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/Cynthia3DProduct.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/Cynthia3DProduct.safetensors && \
+    wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/Textimprover-FLUX-V0.4.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/Textimprover-FLUX-V0.4.safetensors && \
+    wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/aidmaInkStyle-FLUX-V0.1.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/aidmaInkStyle-FLUX-V0.1.safetensors && \
+    wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/vae/ae.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/ae.safetensors && \
+    wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/clip/clip_l.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/clip_l.safetensors
 
-# # Download checkpoints/vae/LoRA to include in image based on model type
-RUN if [ "$MODEL_TYPE" = "sdxl" ]; then \
-      wget -O models/checkpoints/sd_xl_base_1.0.safetensors https://huggingface.co/stabilityai/stable-diffusion-xl-base-1.0/resolve/main/sd_xl_base_1.0.safetensors && \
-      wget -O models/vae/sdxl_vae.safetensors https://huggingface.co/stabilityai/sdxl-vae/resolve/main/sdxl_vae.safetensors && \
-      wget -O models/vae/sdxl-vae-fp16-fix.safetensors https://huggingface.co/madebyollin/sdxl-vae-fp16-fix/resolve/main/sdxl_vae.safetensors; \
-    elif [ "$MODEL_TYPE" = "sd3" ]; then \
-      wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/checkpoints/sd3_medium_incl_clips_t5xxlfp8.safetensors https://huggingface.co/stabilityai/stable-diffusion-3-medium/resolve/main/sd3_medium_incl_clips_t5xxlfp8.safetensors; \
-    elif [ "$MODEL_TYPE" = "flux1-schnell" ]; then \
-      wget -O models/unet/flux1-schnell.safetensors https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/flux1-schnell.safetensors && \
-      wget -O models/clip/clip_l.safetensors https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors && \
-      wget -O models/clip/t5xxl_fp8_e4m3fn.safetensors https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors && \
-      wget -O models/vae/ae.safetensors https://huggingface.co/black-forest-labs/FLUX.1-schnell/resolve/main/ae.safetensors; \
-    elif [ "$MODEL_TYPE" = "flux1-dev" ]; then \
-      wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/unet/flux1-dev.safetensors https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/flux1-dev.safetensors && \
-      wget -O models/clip/clip_l.safetensors https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/clip_l.safetensors && \
-      wget -O models/clip/t5xxl_fp8_e4m3fn.safetensors https://huggingface.co/comfyanonymous/flux_text_encoders/resolve/main/t5xxl_fp8_e4m3fn.safetensors && \
-      wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/vae/ae.safetensors https://huggingface.co/black-forest-labs/FLUX.1-dev/resolve/main/ae.safetensors; \
-    elif [ "$MODEL_TYPE" = "flux1-dev-lora-gen" ]; then \
-      wget -c --timeout=720000 --tries=infinite --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/unet/flux1-dev.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/flux1-dev.safetensors && \      
-      wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/aidmaFLUXPro1.1-FLUX-v0.3.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/aidmaFLUXPro1.1-FLUX-v0.3.safetensors && \
-      wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/Cynthia3DProduct.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/Cynthia3DProduct.safetensors && \
-      wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/Textimprover-FLUX-V0.4.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/Textimprover-FLUX-V0.4.safetensors && \
-      wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/aidmaInkStyle-FLUX-V0.1.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/aidmaInkStyle-FLUX-V0.1.safetensors && \
-      wget -O models/clip/clip_l.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/clip_l.safetensors && \
-      wget -O models/clip/t5xxl_fp8_e4m3fn.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/t5xxl_fp8_e4m3fn.safetensors && \
-      wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/vae/ae.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/ae.safetensors; \
+# Download model-specific files based on MODEL_TYPE
+RUN if [ "$MODEL_TYPE" = "flux1-dev-lora-gen" ]; then \
+      wget -c --timeout=720000 --tries=infinite --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/unet/flux1-dev.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/flux1-dev.safetensors && \
+      wget -O models/clip/t5xxl_fp8_e4m3fn.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/t5xxl_fp8_e4m3fn.safetensors; \
+    elif [ "$MODEL_TYPE" = "flux1-dev-lora-gen-gguf" ]; then \
+      wget -c --timeout=720000 --tries=infinite --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/unet/flux1-dev-Q6_K.gguf https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/flux1-dev-Q6_K.gguf && \
+      wget -O models/clip/t5-v1_1-xxl-encoder-Q6_K.gguf https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/t5-v1_1-xxl-encoder-Q6_K.gguf; \
     fi
 
 # Stage 3: Final image
 FROM base as final
 
 # Copy models from stage 2 to the final image
-COPY --from=model_setup /comfyui/models /comfyui/models
+COPY --from=downloader /comfyui/models /comfyui/models
 
 # Start container
 CMD ["/start.sh"]
