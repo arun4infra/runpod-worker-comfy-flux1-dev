@@ -2,7 +2,7 @@
 apt update && apt install -y git
 
 # Project repo
-git clone https://github.com/arun4infra/runpod-worker-comfy-flux1-dev-2r8n  
+git clone [https://github.com/arun4infra/runpod-worker-comfy-flux1-dev-2r8n  ](https://github.com/arun4infra/runpod-worker-comfy-flux1-dev.git)
 cd runpod-worker-comfy-flux1-dev  
 chmod +x ./build.sh  
 export HUGGINGFACE_ACCESS_TOKEN=hf_  
