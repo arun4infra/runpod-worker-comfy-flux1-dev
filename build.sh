@@ -7,7 +7,8 @@
 # Default values
 DOCKERFILE=${1:-Dockerfile}
 MODEL_TYPE=${2:-flux1-dev}
-TAG=${3:-arun4infra/runpod-worker-comfy:latest}
+TAG_PREFIX=${3:-arun4infra/runpod-worker-comfy}
+TAG="${TAG_PREFIX}:${MODEL_TYPE}"
 PLATFORM="linux/amd64"
 
 # Require HUGGINGFACE_ACCESS_TOKEN to be set
