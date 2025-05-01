@@ -89,7 +89,7 @@ RUN if [ "$MODEL_TYPE" = "sdxl" ]; then \
       wget -O models/clip/t5xxl_fp8_e4m3fn.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/t5xxl_fp8_e4m3fn.safetensors && \
       wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/vae/ae.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/ae.safetensors && \
       wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/flux1_dev_lora_arun_v1.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/flux_lora_arun_v1.safetensors && \      
-wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/flux_realism_lora.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/flux_realism_lora.safetensors; \    
+      wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/flux_realism_lora.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/flux_realism_lora.safetensors; \    
 fi
 
 # Stage 3: Final image
