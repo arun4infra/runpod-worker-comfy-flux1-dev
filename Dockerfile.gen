@@ -61,7 +61,7 @@ ARG HUGGINGFACE_ACCESS_TOKEN
 ARG MODEL_TYPE
 
 # Validate MODEL_TYPE - only allow specific model types
-RUN if [ "$MODEL_TYPE" != "flux1-dev-lora-gen" ] && [ "$MODEL_TYPE" != "flux1-dev-lora-gen-gguf" ]; then \
+RUN if [ "$MODEL_TYPE" != "flux1-dev-lora-gen" ] && [ "$MODEL_TYPE" != "flux1-dev-gen-gguf" ]; then \
       echo "ERROR: Only MODEL_TYPE=flux1-dev-lora-gen or MODEL_TYPE=flux1-dev-lora-gen-gguf are supported"; \
       exit 1; \
     fi
