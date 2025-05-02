@@ -84,7 +84,11 @@ RUN wget -c --timeout=720000 --tries=infinite --header="Authorization: Bearer ${
 
 # Download LoRA models for flux1-dev-2r8n-multi-lora
 RUN wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/flux1_dev_lora_arun_v1.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/flux_lora_arun_v1.safetensors && \
-    wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/flux_realism_lora.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/flux_realism_lora.safetensors
+    wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/flux_realism_lora.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/flux_realism_lora.safetensors && \
+    wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/aidmaFLUXPro1.1-FLUX-v0.3.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/aidmaFLUXPro1.1-FLUX-v0.3.safetensors && \
+    wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/Cynthia3DProduct.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/Cynthia3DProduct.safetensors && \
+    wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/Textimprover-FLUX-V0.4.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/Textimprover-FLUX-V0.4.safetensors && \
+    wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/loras/aidmaInkStyle-FLUX-V0.1.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/aidmaInkStyle-FLUX-V0.1.safetensors
 
 # Stage 3: Final image
 FROM base as final
