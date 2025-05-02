@@ -61,8 +61,8 @@ ARG HUGGINGFACE_ACCESS_TOKEN
 ARG MODEL_TYPE
 
 # Validate MODEL_TYPE - only allow specific model types
-RUN if [ "$MODEL_TYPE" != "flux1-dev-lora-gen" ] && [ "$MODEL_TYPE" != "flux1-dev-gen-gguf" ]; then \
-      echo "ERROR: Only MODEL_TYPE=flux1-dev-lora-gen or MODEL_TYPE=flux1-dev-lora-gen-gguf are supported"; \
+RUN if [ "$MODEL_TYPE" != "flux1-dev-gen" ] && [ "$MODEL_TYPE" != "flux1-dev-gen-gguf" ]; then \
+      echo "ERROR: Only MODEL_TYPE=flux1-dev-gen or MODEL_TYPE=flux1-dev-gen-gguf are supported"; \
       exit 1; \
     fi
 
@@ -81,7 +81,7 @@ RUN wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/
     wget --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/clip/clip_l.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/clip_l.safetensors
 
 # Download model-specific files based on MODEL_TYPE
-RUN if [ "$MODEL_TYPE" = "flux1-dev-lora-gen" ]; then \
+RUN if [ "$MODEL_TYPE" = "flux1-dev-gen" ]; then \
       wget -c --timeout=720000 --tries=infinite --header="Authorization: Bearer ${HUGGINGFACE_ACCESS_TOKEN}" -O models/unet/flux1-dev.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/flux1-dev.safetensors && \
       wget -O models/clip/t5xxl_fp8_e4m3fn.safetensors https://huggingface.co/arun-subramanian-c/flux1-dev-models/resolve/main/t5xxl_fp8_e4m3fn.safetensors; \
     elif [ "$MODEL_TYPE" = "flux1-dev-gen-gguf" ]; then \
