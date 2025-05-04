@@ -1,5 +1,5 @@
 import runpod
-from runpod.serverless.utils import rp_upload
+from runpod.serverless.utils import upload_file_to_bucket
 import json
 import urllib.request
 import urllib.parse
@@ -200,7 +200,7 @@ def base64_encode(img_path):
         return f"{encoded_string}"
 
 
-def process_output_images(outputs, job_id):
+def process_output_images(outputs, job_id, output_path=""):
     """
     This function takes the "outputs" from image generation and the job ID,
     then determines the correct way to return the image, either as a direct URL
@@ -211,22 +211,13 @@ def process_output_images(outputs, job_id):
         outputs (dict): A dictionary containing the outputs from image generation,
                         typically includes node IDs and their respective output data.
         job_id (str): The unique identifier for the job.
+        output_path (str, optional): The path within the S3 bucket where the image 
+                                    should be uploaded. Default is empty string.
 
     Returns:
         dict: A dictionary with the status ('success' or 'error') and the message,
               which is either the URL to the image in the AWS S3 bucket or a base64
               encoded string of the image. In case of error, the message details the issue.
-
-    The function works as follows:
-    - It first determines the output path for the images from an environment variable,
-      defaulting to "/comfyui/output" if not set.
-    - It then iterates through the outputs to find the filenames of the generated images.
-    - After confirming the existence of the image in the output folder, it checks if the
-      AWS S3 bucket is configured via the BUCKET_ENDPOINT_URL environment variable.
-    - If AWS S3 is configured, it uploads the image to the bucket and returns the URL.
-    - If AWS S3 is not configured, it encodes the image in base64 and returns the string.
-    - If the image file does not exist in the output folder, it returns an error status
-      with a message indicating the missing image file.
     """
 
     # The path where ComfyUI stores the generated images
@@ -249,10 +240,28 @@ def process_output_images(outputs, job_id):
     # The image is in the output folder
     if os.path.exists(local_image_path):
         if os.environ.get("BUCKET_ENDPOINT_URL", False):
+            # Process output_path to ensure proper formatting
+            s3_path = output_path.strip('/')
+            if s3_path:
+                s3_path += '/'
+                
+            # Create S3 filename with path
+            s3_filename = f"{s3_path}{job_id}.png"
+            
+            # Get S3 bucket credentials from environment
+            bucket_creds = {
+                "endpointUrl": os.environ.get("BUCKET_ENDPOINT_URL"),
+                "accessId": os.environ.get("BUCKET_ACCESS_KEY_ID"),
+                "accessSecret": os.environ.get("BUCKET_SECRET_ACCESS_KEY")
+            }
+            
+            # Get bucket name from environment
+            bucket_name = os.environ.get("BUCKET_NAME", "runpod-function-${ACCOUNT_ID}")
+            
             # URL to image in AWS S3
-            image = rp_upload.upload_image(job_id, local_image_path)
+            image = upload_file_to_bucket(s3_filename, local_image_path, bucket_creds, bucket_name)
             print(
-                "runpod-worker-comfy - the image was generated and uploaded to AWS S3"
+                f"runpod-worker-comfy - the image was generated and uploaded to AWS S3 at path: {s3_filename}"
             )
         else:
             # base64 image
@@ -296,6 +305,9 @@ def handler(job):
     # Extract validated data
     workflow = validated_data["workflow"]
     images = validated_data.get("images")
+    
+    # Extract output_path if provided
+    output_path = job_input.get("output_path", "")
 
     # Make sure that the ComfyUI API is available
     check_server(
@@ -338,7 +350,8 @@ def handler(job):
         return {"error": f"Error waiting for image generation: {str(e)}"}
 
     # Get the generated image and return it as URL in an AWS bucket or as base64
-    images_result = process_output_images(history[prompt_id].get("outputs"), job["id"])
+    # Pass the output_path to process_output_images
+    images_result = process_output_images(history[prompt_id].get("outputs"), job["id"], output_path)
 
     result = {**images_result, "refresh_worker": REFRESH_WORKER}
 
